@@ -1,8 +1,12 @@
 use crate::{board::Board, solvers::backtracking::BackTrackingSolver};
 
+#[cfg(test)]
+mod tests;
+
 pub mod backtracking;
 
 pub trait Solver {
+    fn name(&self) -> &'static str;
     fn solve(&self, board: &mut Board) -> bool;
 }
 

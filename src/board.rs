@@ -1,6 +1,10 @@
 // src/board.rs
 use std::{array, fmt};
 
+#[cfg(test)]
+mod tests;
+
+#[derive(Clone)]
 pub struct Board(pub [[Cell; 9]; 9]);
 
 #[derive(Clone)]
@@ -77,6 +81,13 @@ impl Board {
             .iter_mut()
             .flatten()
             .rfind(|cell| cell.value != CellValue::Empty && !cell.fixed)
+    }
+
+    pub fn to_str(&self) -> String {
+        self.0.iter().map(|row| row.clone().map(|cell| match cell.value {
+            CellValue::Empty => ".".to_string(),
+            CellValue::Filled(val) => val.to_string()
+        }).concat()).reduce(|coll, substr| coll + substr.as_str()).expect("Failed to parse board to str")
     }
 }
 

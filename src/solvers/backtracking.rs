@@ -38,4 +38,8 @@ impl Solver for BackTrackingSolver {
             }
         }
     }
+    
+    fn name(&self) -> &'static str {
+        "Backtracking"
+    }
 }
