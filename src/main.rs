@@ -3,24 +3,31 @@
  * Most Time Needed: .....9.......4..5.68.........4....7....62........8.......9..8.6........3..3..52..
  * 					Best time: 6 s
  *
- * Less Time Needed: 8..45.6...3.68.......3.28.11.....2...6.....5...9.....89.78.6.......29.7...6.34..9
- *
+ * Least Time Needed: 8..45.6...3.68.......3.28.11.....2...6.....5...9.....89.78.6.......29.7...6.34..9
  * 					Best time: 2.4 ms
 */
-
 use std::{
-    process::{ExitCode},
-    time::Instant,
+    process::ExitCode, time::Instant
 };
 mod board;
+mod solvers;
 
-use crate::board::Board;
+use crate::{board::Board, solvers::{get_solver}};
 
 use crate::board::{parse_puzzle_string};
 
 fn main() -> ExitCode {
+    // TODO: get these from args
     let puzzle =
         "8..45.6...3.68.......3.28.11.....2...6.....5...9.....89.78.6.......29.7...6.34..9";
+    
+    let solver = match get_solver("backtracking") {
+        Err(msg) => {
+            println!("{}", msg);
+            return ExitCode::FAILURE;
+        },
+        Ok(val) => val
+    };
 
     let mut board: Board = match parse_puzzle_string(puzzle) {
         None => return ExitCode::FAILURE,
@@ -31,7 +38,7 @@ fn main() -> ExitCode {
     println!("{}", board);
 
     let start = Instant::now();
-    let solved = board.solve();
+    let solved = solver.solve(&mut board);
     let duration = start.elapsed();
     println!("Time to solve is: {:?}", duration);
 
