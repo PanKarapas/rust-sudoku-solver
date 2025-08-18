@@ -1,4 +1,4 @@
-use crate::{board::{cell::simple_cell::SimpleCell, Board}, solvers::Solver};
+use crate::{board::{cell::{simple_cell::SimpleCell, CellPosition, CellValue}, Board}, solvers::Solver};
 
 pub struct BackTrackingSolver;
 impl Solver for BackTrackingSolver {
@@ -7,37 +7,37 @@ impl Solver for BackTrackingSolver {
             Err(error) => return Err(error),
             Ok(b) => b
         };
-        let mut curr_cell: &mut SimpleCell;
+        let mut curr_cell_pos: CellPosition = CellPosition { row: 0, column: 0 };
         let mut is_valid = true;
         loop {
             // If the current board is valid (no duplicate values)
-            curr_cell = if is_valid {
+            curr_cell_pos = if is_valid {
                 if let Some(cell) = board.get_first_non_fixed_zero() {
-                    cell
+                    cell.position.clone()
                 } else {
                     if board.is_correct() {
                         return Ok((true, board.to_str().clone()));
                     } else {
                         if let Some(cell) = board.get_last_non_fixed_non_zero() {
-                            cell
+                            cell.position.clone()
                         } else {
-                            // no solution exists
                             return Ok((false, "".to_string()));
                         }
                     }
                 }
             } else {
                 if let Some(cell) = board.get_last_non_fixed_non_zero() {
-                    cell
+                    cell.position.clone()
                 } else {
-                    // no solution exists
-                            return Ok((false, "".to_string()));
+                    return Ok((false, "".to_string()));
                 }
             };
-            let increment_result = curr_cell.increment();
+
+            let mut_cell = board.get_mut_cell(&curr_cell_pos);
+            let increment_result = mut_cell.increment();
 
             if increment_result.needs_revalidation {
-                is_valid = board.is_correct();
+                is_valid = board.is_cell_valid(curr_cell_pos);
             } else {
                 is_valid = increment_result.is_board_valid;
             }
