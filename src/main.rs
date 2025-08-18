@@ -9,12 +9,12 @@
 use std::{
     process::ExitCode, time::Instant
 };
+
 mod board;
 mod solvers;
 
-use crate::{board::Board, solvers::{get_solver}};
+use crate::solvers::get_solver;
 
-use crate::board::{parse_puzzle_string};
 
 fn main() -> ExitCode {
     // TODO: get these from args
@@ -28,27 +28,54 @@ fn main() -> ExitCode {
         },
         Ok(val) => val
     };
-
-    let mut board: Board = match parse_puzzle_string(puzzle) {
-        None => return ExitCode::FAILURE,
-        Some(value) => value
-    };
     
     println!("Board:");
-    println!("{}", board);
+    print_puzzle(puzzle.to_string());
+
 
     let start = Instant::now();
-    let solved = solver.solve(&mut board);
+    let solved = solver.solve(&puzzle);
     let duration = start.elapsed();
     println!("Time to solve is: {:?}", duration);
 
-    if !solved {
-        println!("Unsolvable...");
-    } else {
-        println!("Solution:");
-        println!("{}", board);
-
+    match solved {
+        Err(error) => println!("Error while solving: {error}"),
+        Ok((solved, solved_board)) => {
+            if !solved {
+                println!("Unsolvable...");
+            } else {
+                println!("Solution:");
+                print_puzzle(solved_board);
+            }
+        }
     }
     return ExitCode::SUCCESS;
+}
+
+fn print_puzzle(puzzle: String) {
+    let chars: Vec<char> = puzzle.chars().collect();
+    let size = 9;
+
+    for row in 0..size {
+        if row % 3 == 0 && row != 0 {
+            println!("------+-------+------");
+        }
+
+        for col in 0..size {
+            if col % 3 == 0 && col != 0 {
+                print!("| ");
+            }
+
+            let idx = row * size + col;
+            let ch = chars[idx];
+
+            if ch == '.' {
+                print!(". ");
+            } else {
+                print!("{} ", ch);
+            }
+        }
+        println!();
+    }
 }
 

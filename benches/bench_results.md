@@ -1,3 +1,8 @@
+### 2025-08-18
+Note: Due to architecture changes, from now on these include parsing of the puzzle string
+- **Backtracking_simple**: [2.1168 ms 2.1599 ms 2.2085 ms]
+- **Backtracking_hard**: [6448.7 ms 6503.5 ms 6555.3 ms]
+
 ### 2025-08-17
 - **Backtracking_simple**: [2.0409 ms, 2.0721 ms, 2.1133 ms]
 - **Backtracking_hard**: [6339.5 ms, 6.419.1 ms, 6.535.0 ms]

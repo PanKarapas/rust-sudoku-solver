@@ -1,27 +1,24 @@
-use crate::{board::{Board}, solvers::Solver, solvers::BackTrackingSolver};
+use crate::{solvers::{BackTrackingSolver, Solver}};
 
 
 fn check_all_solvers(puzzle: &'static str, solution: Option<&'static str>) {
-    let board = crate::board::parse_puzzle_string(puzzle);
-    match board {
-        None => assert!(false, "Puzzle failed to be parsed into a board."),
-        Some(board) => {
-            check_solver(BackTrackingSolver, board, solution);
-
-        }
-    }
+    check_solver(BackTrackingSolver,puzzle, solution);
 }
 
-fn check_solver<S: Solver>(solver: S, puzzle: Board, expect: Option<&'static str>) {
-    let mut board = puzzle.clone();
-    let res = solver.solve(&mut board);
+fn check_solver<S: Solver>(solver: S, board: &'static str, expect: Option<&'static str>) {
+    let res = solver.solve(board);
     match expect {
         None => {
-            if res {
-                assert!(!res, "{} solved impossible puzzle: {puzzle}", solver.name())
+            if res.is_ok_and(|ret| ret.0 == true) {
+                assert!(false, "{} solved impossible puzzle: {board}", solver.name())
             }
         },
-        Some(solution) => assert_eq!(board.to_str(), solution, "{} failed to solve puzzle {}", solver.name(), puzzle.to_str())
+        Some(solution) => {
+            match res {
+                Err(error) => assert!(false, "{} failed to parse puzzle {board} with error: {error}", solver.name()),
+                Ok((_, actual)) => assert_eq!(actual, solution, "{} failed to solve puzzle {}", solver.name(), board)
+            }
+        }
     }
 }
 
