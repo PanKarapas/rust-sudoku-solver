@@ -1,8 +1,13 @@
-use crate::{board::{Board, Cell}, solvers::Solver};
+use crate::{board::{cell::simple_cell::SimpleCell, Board}, solvers::Solver};
+
 pub struct BackTrackingSolver;
 impl Solver for BackTrackingSolver {
-    fn solve(&self, board: &mut Board) -> bool {
-        let mut curr_cell: &mut Cell;
+    fn solve(&self, puzzle: &'static str) -> Result<(bool, String), &'static str> {
+        let mut board = match Board::<SimpleCell>::parse_puzzle_string(puzzle) {
+            Err(error) => return Err(error),
+            Ok(b) => b
+        };
+        let mut curr_cell: &mut SimpleCell;
         let mut is_valid = true;
         loop {
             // If the current board is valid (no duplicate values)
@@ -11,13 +16,13 @@ impl Solver for BackTrackingSolver {
                     cell
                 } else {
                     if board.is_correct() {
-                        return true;
+                        return Ok((true, board.to_str().clone()));
                     } else {
                         if let Some(cell) = board.get_last_non_fixed_non_zero() {
                             cell
                         } else {
                             // no solution exists
-                            return false;
+                            return Ok((false, "".to_string()));
                         }
                     }
                 }
@@ -26,7 +31,7 @@ impl Solver for BackTrackingSolver {
                     cell
                 } else {
                     // no solution exists
-                    return false;
+                            return Ok((false, "".to_string()));
                 }
             };
             let increment_result = curr_cell.increment();

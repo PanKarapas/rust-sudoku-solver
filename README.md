@@ -16,11 +16,12 @@ These are measured in my personal machine, so YMMV. That said, they are all run 
 A full historical list of bench mark results can be found at [bench_results.md](/benches/bench_results.md).
 
 ### Latest
+Note: Due to architecture changes, from now on these include parsing of the puzzle string
 
 Name | [fastest, median, slowest]
 --- | --- 
-Backtracking_simple | [2.0409 ms 2.0721 ms 2.1133 ms] 
-Backtracking_hard | [6339.5 s 6419.1 s 6535.0 s]
+Backtracking_simple | [2.1168 ms 2.1599 ms 2.2085 ms]
+Backtracking_hard | [6448.7 ms 6503.5 ms 6555.3 ms]
 
 ### Usage
 ```bash
