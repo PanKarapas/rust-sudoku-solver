@@ -5,7 +5,6 @@ mod tests;
 
 
 pub mod backtracking;
-pub mod constraint_backtracking;
 
 pub trait Solver {
     fn name(&self) -> &'static str;
