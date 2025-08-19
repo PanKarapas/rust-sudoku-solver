@@ -1,9 +1,10 @@
-use crate::board::cell::{CellValue, IsCell};
+use crate::board::cell::{CellPosition, CellValue, IsCell};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct SimpleCell {
     pub value: CellValue,
     pub fixed: bool,
+    pub position: CellPosition
 }
 
 impl IsCell for SimpleCell {
@@ -15,10 +16,11 @@ impl IsCell for SimpleCell {
         self.fixed
     }
 
-    fn init(value: CellValue, fixed: bool) -> Self {
+    fn init(value: CellValue, fixed: bool, position: CellPosition) -> Self {
         SimpleCell {
-            value: value,
-            fixed: fixed,
+            value,
+            fixed,
+            position
         }
     }
 }

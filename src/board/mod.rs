@@ -1,12 +1,12 @@
 use std::array;
 
-use crate::board::cell::{CellValue, IsCell};
+use crate::board::cell::{CellPosition, CellValue, IsCell};
 
 pub mod cell;
 #[cfg(test)]
 mod tests;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Board<T>(pub [[T; 9]; 9])
 where
     T: IsCell;
@@ -49,10 +49,33 @@ where
         })
     }
 
+    pub fn get_mut_cell(&mut self, position: &CellPosition) -> &mut T {
+        &mut self.0[position.row as usize][position.column  as usize]
+    }
+
+    pub fn is_cell_valid(&self, cell_position: CellPosition) -> bool {
+
+        if !Self::is_group_correct(self.get_row(cell_position.row)) {
+            return false;
+        }
+
+        if !Self::is_group_correct(self.get_col(cell_position.column)) {
+            return false;
+        }
+
+        if !Self::is_group_correct(self.get_square(cell_position.column, cell_position.row)) {
+            return false;
+        }
+
+        return true;
+    }
+
     pub fn is_correct(&self) -> bool {
+
         if (0..9).any(|row| !Self::is_group_correct(self.get_row(row))) {
             return false;
         }
+
         if (0..9).any(|col| !Self::is_group_correct(self.get_col(col))) {
             return false;
         }
@@ -64,16 +87,16 @@ where
         return true;
     }
 
-    pub fn get_first_non_fixed_zero(&mut self) -> Option<&mut T> {
+    pub fn get_first_non_fixed_zero(&self) -> Option<&T> {
         self.0
-            .iter_mut()
+            .iter()
             .flatten()
             .find(|cell| *cell.value() == CellValue::Empty && !cell.is_fixed())
     }
 
-    pub fn get_last_non_fixed_non_zero(&mut self) -> Option<&mut T> {
+    pub fn get_last_non_fixed_non_zero(&self) -> Option<&T> {
         self.0
-            .iter_mut()
+            .iter()
             .flatten()
             .rfind(|cell| *cell.value() != CellValue::Empty && !cell.is_fixed())
     }
@@ -100,7 +123,8 @@ where
 
         let flat = puzzle
             .chars()
-            .map(|c| {
+            .enumerate()
+            .map(|(i, c)| {
                 T::init(
                     {
                         if c == '.' {
@@ -110,6 +134,10 @@ where
                         }
                     },
                     c != '.',
+                    CellPosition {
+                        row: (i / 9) as i8,
+                        column: (i % 9) as i8
+                    }
                 )
             })
             .collect::<Vec<T>>();
