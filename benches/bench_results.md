@@ -1,3 +1,9 @@
+### 2025-08-19
+- **Backtracking_simple**: [0.61103 ms 0.61214 ms 0.61343 ms]
+- **Backtracking_hard**: [1844.7 ms 1854.6 ms 1864.9 ms]
+- **ConstrainedBackTrackingSolver_simple**: [0.20164 ms 0.20315 ms 0.20513 ms]
+- **ConstrainedBackTrackingSolver_hard**: [1041.0 ms 1048.3 ms 1057.2 ms]
+
 ### 2025-08-18 (2)
 - **Backtracking_simple**: [0.61058 ms 0.61940 ms 0.62912 ms]
 - **Backtracking_hard**: [1849.1 ms 1888.0 ms 1934.6 ms]
