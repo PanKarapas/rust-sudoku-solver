@@ -1,4 +1,4 @@
-use crate::{board::{cell::{simple_cell::SimpleCell, CellPosition, CellValue}, Board}, solvers::Solver};
+use crate::{board::{cell::{simple_cell::SimpleCell, CellPosition}, Board}, solvers::Solver};
 
 pub struct BackTrackingSolver;
 impl Solver for BackTrackingSolver {
@@ -7,7 +7,7 @@ impl Solver for BackTrackingSolver {
             Err(error) => return Err(error),
             Ok(b) => b
         };
-        let mut curr_cell_pos: CellPosition = CellPosition { row: 0, column: 0 };
+        let mut curr_cell_pos: CellPosition;
         let mut is_valid = true;
         loop {
             // If the current board is valid (no duplicate values)
@@ -42,9 +42,5 @@ impl Solver for BackTrackingSolver {
                 is_valid = increment_result.is_board_valid;
             }
         }
-    }
-    
-    fn name(&self) -> &'static str {
-        "Backtracking"
     }
 }

@@ -6,7 +6,7 @@ pub mod cell;
 #[cfg(test)]
 mod tests;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Board<T>(pub [[T; 9]; 9])
 where
     T: IsCell;
@@ -149,24 +149,8 @@ where
         return Ok(board);
     }
 
-    fn check_puzzle_string_valid(puzzle: &str) -> Result<(), &'static str> {
-        if puzzle.len() != 81 {
-            return Err("Input string has the wrong length.");
-        }
-
-        if puzzle.find(|c: char| !char::is_numeric(c) && c != '.') != None {
-            return Err("Invalid char in input string.");
-        }
-
-        if puzzle.find(|c: char| c == '0') != None {
-            return Err("Found 0 in input string.");
-        }
-
-        return Ok(());
-    }
-
     // Checks if any group (9 cells) has any duplicates excluding 0s
-    fn is_group_correct(group: [&T; 9]) -> bool
+    pub fn is_group_correct(group: [&T; 9]) -> bool
     where
         T: IsCell,
     {
@@ -184,4 +168,14 @@ where
         }
         return true;
     }
-}
+    fn check_puzzle_string_valid(puzzle: &str) -> Result<(), &'static str> {
+        if puzzle.len() != 81 {
+            return Err("Input string has the wrong length.");
+        }
+
+        if !puzzle.chars().all(|c| c == '.' || (c.is_ascii_digit() && c != '0')) {
+            return Err("Invalid char in input string. Only '.' and ASCII digits 1-9 are allowed.");
+        }
+
+        return Ok(());
+    }}

@@ -1,6 +1,7 @@
 use core::fmt;
 
 pub mod simple_cell;
+pub mod constrained_cell;
 
 pub trait IsCell: Clone {
     fn value(&self) -> &CellValue;
@@ -19,7 +20,6 @@ pub enum CellValue {
     Filled(i8),
 }
 
-
 impl fmt::Display for CellValue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", match self {
@@ -27,4 +27,9 @@ impl fmt::Display for CellValue {
             CellValue::Filled(val) => val.to_string()
         })
     }
+}
+
+pub struct IncrementResult {
+    pub is_board_valid: bool,
+    pub needs_revalidation: bool,
 }

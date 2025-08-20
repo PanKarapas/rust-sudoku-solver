@@ -1,4 +1,4 @@
-use crate::board::cell::{CellPosition, CellValue, IsCell};
+use crate::board::cell::{CellPosition, CellValue, IncrementResult, IsCell};
 
 #[derive(Clone, Debug)]
 pub struct SimpleCell {
@@ -23,11 +23,6 @@ impl IsCell for SimpleCell {
             position
         }
     }
-}
-
-pub struct IncrementResult {
-    pub is_board_valid: bool,
-    pub needs_revalidation: bool,
 }
 
 impl SimpleCell {
