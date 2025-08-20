@@ -35,7 +35,6 @@ where
 
     pub fn get_square(&self, x: i8, y: i8) -> [&T; 9] {
         let x_in_square = x % 3;
-
         let y_in_square = y % 3;
 
         let square_corner_x = x - x_in_square;

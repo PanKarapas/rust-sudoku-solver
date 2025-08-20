@@ -58,77 +58,102 @@ impl Solver for ConstrainedBackTrackingSolver {
 }
 
 impl ConstrainedBackTrackingSolver {
+    // Only works on fully fixed boards
+    // if any cells are not fixed but have values, it will not work as expected
     fn calculate_fixed_board_constrains_until_stable(board: &mut Board<ConstrainedCell>) {
-        while ConstrainedBackTrackingSolver::calculate_fixed_board_constrains(board) {}
-    }
-    fn calculate_fixed_board_constrains(board: &mut Board<ConstrainedCell>) -> bool {
-        let mut changed = false;
-        let starting_board = &*board;
-        let mut forbidden_map: [[[bool;10]; 9]; 9] = [[[false; 10]; 9]; 9];
-        for row in &board.0 {
-            for cell in row {
-                if !cell.fixed {
-                    let position = cell.position;
-                    // Boolean array: forbidden[i] = true if value i is not allowed
-                    let mut forbidden = [false; 10];
+        // Each of these represents the values that are disallowed (because a fixed cell already has them)
+        // in the row, column, and square
+        let mut row_forbidden: [u16; 9] = [0u16; 9];
+        let mut col_forbidden: [u16; 9] = [0u16; 9];
+        let mut square_forbidden: [u16; 9] = [0u16; 9];
+        // Cells that need their individual constrains re-checked, initially all non fixed cells
+        let mut check_queue: Vec<CellPosition> = Vec::with_capacity(81);
+        // so we don't push the same pos in twice
+        let mut in_queue = [[false; 9]; 9];
 
-                    // Mark row constraints
-                    for c in starting_board.get_row(position.row) {
-                        if c.position.column != position.column {
-                            if let CellValue::Filled(val) = c.value {
-                                forbidden[val as usize] = true;
-                            }
-                        }
-                    }
-
-                    // Mark column constraints
-                    for c in starting_board.get_col(position.column) {
-                        if c.position.row != position.row {
-                            if let CellValue::Filled(val) = c.value {
-                                forbidden[val as usize] = true;
-                            }
-                        }
-                    }
-                    // Mark square constraints
-                    for c in starting_board.get_square(position.column, position.row) {
-                        if c.position != position {
-                            if let CellValue::Filled(val) = c.value {
-                                forbidden[val as usize] = true;
-                            }
-                        }
-                    }
-                    forbidden_map[cell.position.row as usize][cell.position.column as usize] = forbidden;
+        // calculate the forbidden maps, and populate check quue
+        for row_index in 0..=8 {
+            for col_index in 0..=8 {
+                // already has value, presumed fixed
+                if let CellValue::Filled(val) = &board.0[row_index][col_index].value {
+                    row_forbidden[row_index] |= 1u16 << val;
+                    col_forbidden[col_index] |= 1u16 << val;
+                    square_forbidden[((row_index / 3) * 3) + (col_index / 3)] |= 1u16 << val;
+                } else {
+                    // Otherwise we will need to check if it can be constrained
+                    check_queue.push(board.0[row_index][col_index].position);
+                    in_queue[row_index][col_index] = true;
                 }
             }
         }
-        for row in &mut board.0 {
-                 for cell in row {
-                    let position = cell.position;
-                    let forbidden = forbidden_map[position.row as usize][position.column as usize];
+        while let Some(pos_to_check) = check_queue.pop() {
+            let cell = &mut board.0[pos_to_check.row as usize][pos_to_check.column as usize];
+            let position = cell.position;
+            in_queue[position.row as usize][position.column as usize] = false;
+            let square_index = (((position.row / 3) * 3) + (position.column / 3)) as usize;
+            let forbidden = row_forbidden[position.row as usize]
+                | col_forbidden[position.column as usize]
+                | square_forbidden[square_index];
 
-                    let mut allowed_val = None;
-                    let mut only_one = true;
-                    for i in 1..=9 {
-                        if forbidden[i as usize] && cell.value_constraint_map[i as usize] == ValueConstraint::Allowed {
-                            cell.value_constraint_map[i as usize] = ValueConstraint::FixedNotAllowed;
-                            changed = true;
-                        }
-                        if only_one && cell.value_constraint_map[i as usize] == ValueConstraint::Allowed {
-                            if allowed_val.is_some() {
-                                only_one = false;
-                            }
-                            allowed_val = Some(i);
-                        }
+            // Update cell constraints
+            for i in 1..=9 {
+                if ((forbidden >> i) & 1u16) > 0
+                    && cell.value_constraint_map[i as usize] == ValueConstraint::Allowed
+                {
+                    cell.value_constraint_map[i as usize] = ValueConstraint::FixedNotAllowed;
+                }
+            }
+            // If there is only 1 value the cell can take
+            // 7 for the unused bits + 1 for the available
+            if forbidden.count_zeros() == 8 {
+                cell.fixed = true;
+                let new_value = ((!forbidden) >> 1).trailing_zeros() as i8 + 1;
+                cell.value = CellValue::Filled(new_value);
+                // Update forbitten masks with new value
+                row_forbidden[position.row as usize] |= 1u16 << new_value;
+                col_forbidden[position.column as usize] |= 1u16 << new_value;
+                square_forbidden[square_index] |= 1u16 << new_value;
+
+                // Get all non fixed cells that might be affected by this, push them to the queue to be re-checked
+                let square_start_row = (pos_to_check.row / 3) * 3;
+                let square_start_col = (pos_to_check.column / 3) * 3;
+                for i in 0..=8 {
+                    if i != pos_to_check.column
+                        && !board.0[pos_to_check.row as usize][i as usize].fixed
+                        && !in_queue[pos_to_check.row as usize][i as usize]
+                    {
+                        check_queue.push(CellPosition {
+                            row: pos_to_check.row,
+                            column: i,
+                        });
+                        in_queue[pos_to_check.row as usize][i as usize] = true;
                     }
 
-                    if only_one {
-                        if let Some(val) = allowed_val {
-                            cell.fixed = true;
-                            cell.value = CellValue::Filled(val as i8);
-                        }
+                    if i != pos_to_check.row
+                        && !board.0[i as usize][pos_to_check.column as usize].fixed
+                        && !in_queue[i as usize][pos_to_check.column as usize]
+                    {
+                        check_queue.push(CellPosition {
+                            row: i,
+                            column: pos_to_check.column,
+                        });
+                        in_queue[i as usize][pos_to_check.column as usize] = true;
+                    }
+                    let square_cell_row = square_start_row + (i / 3);
+                    let square_cell_column = square_start_col + (i % 3);
+                    if (square_cell_row != pos_to_check.row
+                        || square_cell_column != pos_to_check.column)
+                        && !board.0[square_cell_row as usize][square_cell_column as usize].fixed
+                        && !in_queue[square_cell_row as usize][square_cell_column as usize]
+                    {
+                        check_queue.push(CellPosition {
+                            row: square_cell_row,
+                            column: square_cell_column,
+                        });
+                        in_queue[square_cell_row as usize][square_cell_column as usize] = true;
                     }
                 }
+            }
         }
-        changed
     }
 }
