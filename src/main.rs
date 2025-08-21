@@ -21,7 +21,7 @@ fn main() -> ExitCode {
     let puzzle =
         "8..45.6...3.68.......3.28.11.....2...6.....5...9.....89.78.6.......29.7...6.34..9";
     
-    let solver = match get_solver("constrainedbacktracking") {
+    let solver = match get_solver("celleliminated") {
         Err(msg) => {
             println!("{}", msg);
             return ExitCode::FAILURE;

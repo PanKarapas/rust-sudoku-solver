@@ -8,16 +8,16 @@ use crate::{
     },
     solvers::Solver,
 };
-pub struct ConstrainedBackTrackingSolver;
+pub struct CellEliminatedBacktrackingSolver;
 
-impl Solver for ConstrainedBackTrackingSolver {
+impl Solver for CellEliminatedBacktrackingSolver {
     fn solve(&self, puzzle: &'static str) -> Result<(bool, String), &'static str> {
         let mut board = match Board::<ConstrainedCell>::parse_puzzle_string(puzzle) {
             Err(error) => return Err(error),
             Ok(b) => b,
         };
 
-        ConstrainedBackTrackingSolver::calculate_fixed_board_constrains_until_stable(&mut board);
+        CellEliminatedBacktrackingSolver::calculate_fixed_board_constrains_until_stable(&mut board);
 
         let mut curr_cell_pos: CellPosition;
         let mut is_valid = true;
@@ -57,7 +57,7 @@ impl Solver for ConstrainedBackTrackingSolver {
     }
 }
 
-impl ConstrainedBackTrackingSolver {
+impl CellEliminatedBacktrackingSolver {
     // Only works on fully fixed boards
     // if any cells are not fixed but have values, it will not work as expected
     fn calculate_fixed_board_constrains_until_stable(board: &mut Board<ConstrainedCell>) {

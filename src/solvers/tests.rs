@@ -1,9 +1,9 @@
-use crate::solvers::{constrained_backtracking::ConstrainedBackTrackingSolver, BackTrackingSolver, Solver};
+use crate::solvers::{cell_eliminated_backtracking::CellEliminatedBacktrackingSolver, BacktrackingSolver, Solver};
 
 
 fn check_all_solvers(puzzle: &'static str, solution: Option<&'static str>) {
-    check_solver(BackTrackingSolver,puzzle, solution);
-    check_solver(ConstrainedBackTrackingSolver,puzzle, solution);
+    check_solver(BacktrackingSolver,puzzle, solution);
+    check_solver(CellEliminatedBacktrackingSolver,puzzle, solution);
 }
 
 fn check_solver<S: Solver>(solver: S, board: &'static str, expect: Option<&'static str>) {
