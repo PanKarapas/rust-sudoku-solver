@@ -71,21 +71,17 @@ impl CellEliminatedBacktrackingSolver {
         // so we don't push the same pos in twice
         let mut in_queue = [[false; 9]; 9];
 
-        // calculate the forbidden maps, and populate check quue
-        for row_index in 0..=8 {
-            for col_index in 0..=8 {
-                // already has value, presumed fixed
-                if let CellValue::Filled(val) = &board.0[row_index][col_index].value {
-                    row_forbidden[row_index] |= 1u16 << val;
-                    col_forbidden[col_index] |= 1u16 << val;
-                    square_forbidden[((row_index / 3) * 3) + (col_index / 3)] |= 1u16 << val;
-                } else {
-                    // Otherwise we will need to check if it can be constrained
-                    check_queue.push(board.0[row_index][col_index].position);
-                    in_queue[row_index][col_index] = true;
-                }
-            }
-        }
+        ConstrainedCell::calculate_forbidden_matrices(
+            board,
+            &mut row_forbidden,
+            &mut col_forbidden,
+            &mut square_forbidden,
+            &mut check_queue,
+            &mut in_queue,
+            // unused
+            &mut [[false; 9]; 9]
+        );
+
         while let Some(pos_to_check) = check_queue.pop() {
             let cell = &mut board.0[pos_to_check.row as usize][pos_to_check.column as usize];
             let position = cell.position;
