@@ -18,11 +18,10 @@ A full historical list of bench mark results can be found at [bench_results.md](
 ### Latest
 Name | [fastest, median, slowest]
 --- | --- 
-Backtracking_simple | [0.61103 ms 0.61214 ms 0.61343 ms]
-Backtracking_hard | [1844.7 ms 1854.6 ms 1864.9 ms]
-ConstrainedBackTrackingSolver_simple | [0.20164 ms 0.20315 ms 0.20513]
-ConstrainedBackTrackingSolver_hard | [1041.0 ms 1048.3 ms 1057.2 ms]
-
+Backtracking_simple | [0.62312 ms 0.62718 ms 0.63191 ms]
+Backtracking_hard | [1948.5 ms 1974.3 ms 2000.0 ms]
+ConstrainedBackTrackingSolver_simple | [0.19662 ms 0.20070 ms 0.20518 ms]
+ConstrainedBackTrackingSolver_hard | [1105.7 ms 1114.6 ms 1123.9 ms]
 
 ### Usage
 ```bash
