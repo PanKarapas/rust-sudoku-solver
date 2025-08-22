@@ -19,11 +19,11 @@ use crate::solvers::get_solver;
 fn main() -> ExitCode {
     // TODO: get these from args
     let puzzle =
-        "8..45.6...3.68.......3.28.11.....2...6.....5...9.....89.78.6.......29.7...6.34..9";
+        ".83.2..9....8..1...293....8....987...7.....6...674....3....698...2..5....1..3.54.";
     
-    let solver = match get_solver("celleliminated") {
+    let solver = match get_solver("groupeliminated") {
         Err(msg) => {
-            println!("{}", msg);
+            eprintln!("{}", msg);
             return ExitCode::FAILURE;
         },
         Ok(val) => val

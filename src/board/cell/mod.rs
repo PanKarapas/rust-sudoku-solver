@@ -6,7 +6,7 @@ pub mod constrained_cell;
 pub trait IsCell: Clone {
     fn value(&self) -> &CellValue;
     fn is_fixed(&self) -> bool;
-    fn init(value: CellValue, fixed: bool, position: CellPosition) -> Self;
+    fn new(value: CellValue, fixed: bool, position: CellPosition) -> Self;
 }
 #[derive(Clone, PartialEq, Eq, Copy, Debug)]
 pub struct CellPosition {

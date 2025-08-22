@@ -124,7 +124,7 @@ where
             .chars()
             .enumerate()
             .map(|(i, c)| {
-                T::init(
+                T::new(
                     {
                         if c == '.' {
                             CellValue::Empty

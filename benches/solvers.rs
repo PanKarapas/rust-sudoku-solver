@@ -3,7 +3,7 @@ use std::time::Duration;
 use criterion::{
     BenchmarkGroup, Criterion, criterion_group, criterion_main, measurement::WallTime,
 };
-use rust_sudoku_solver::solvers::{backtracking::BacktrackingSolver, cell_eliminated_backtracking::CellEliminatedBacktrackingSolver, Solver};
+use rust_sudoku_solver::solvers::{backtracking::BacktrackingSolver, cell_eliminated_backtracking::CellEliminatedBacktrackingSolver, group_eliminated_backtracking::GroupEliminatedBacktrackingSolver, Solver};
 
 fn bench_solvers(c: &mut Criterion) {
     let mut group = c.benchmark_group("sudoku_solvers");
@@ -34,7 +34,8 @@ fn bench_all_solvers(
 ) {
     let solvers: &[Box<dyn Solver>] = &[
         Box::new(BacktrackingSolver),
-        Box::new(CellEliminatedBacktrackingSolver)
+        Box::new(CellEliminatedBacktrackingSolver),
+        Box::new(GroupEliminatedBacktrackingSolver)
     ];
     
     for solver in solvers {

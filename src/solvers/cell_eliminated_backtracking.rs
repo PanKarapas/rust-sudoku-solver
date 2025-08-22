@@ -17,7 +17,7 @@ impl Solver for CellEliminatedBacktrackingSolver {
             Ok(b) => b,
         };
 
-        CellEliminatedBacktrackingSolver::calculate_fixed_board_constrains_until_stable(&mut board);
+        CellEliminatedBacktrackingSolver::calculate_fixed_board_constraints_until_stable(&mut board);
 
         let mut curr_cell_pos: CellPosition;
         let mut is_valid = true;
@@ -60,32 +60,28 @@ impl Solver for CellEliminatedBacktrackingSolver {
 impl CellEliminatedBacktrackingSolver {
     // Only works on fully fixed boards
     // if any cells are not fixed but have values, it will not work as expected
-    fn calculate_fixed_board_constrains_until_stable(board: &mut Board<ConstrainedCell>) {
+    fn calculate_fixed_board_constraints_until_stable(board: &mut Board<ConstrainedCell>) {
         // Each of these represents the values that are disallowed (because a fixed cell already has them)
         // in the row, column, and square
         let mut row_forbidden: [u16; 9] = [0u16; 9];
         let mut col_forbidden: [u16; 9] = [0u16; 9];
         let mut square_forbidden: [u16; 9] = [0u16; 9];
-        // Cells that need their individual constrains re-checked, initially all non fixed cells
+        // Cells that need their individual constraints re-checked, initially all non-fixed cells
         let mut check_queue: Vec<CellPosition> = Vec::with_capacity(81);
         // so we don't push the same pos in twice
         let mut in_queue = [[false; 9]; 9];
 
-        // calculate the forbidden maps, and populate check quue
-        for row_index in 0..=8 {
-            for col_index in 0..=8 {
-                // already has value, presumed fixed
-                if let CellValue::Filled(val) = &board.0[row_index][col_index].value {
-                    row_forbidden[row_index] |= 1u16 << val;
-                    col_forbidden[col_index] |= 1u16 << val;
-                    square_forbidden[((row_index / 3) * 3) + (col_index / 3)] |= 1u16 << val;
-                } else {
-                    // Otherwise we will need to check if it can be constrained
-                    check_queue.push(board.0[row_index][col_index].position);
-                    in_queue[row_index][col_index] = true;
-                }
-            }
-        }
+        ConstrainedCell::calculate_forbidden_matrices(
+            board,
+            &mut row_forbidden,
+            &mut col_forbidden,
+            &mut square_forbidden,
+            &mut check_queue,
+            &mut in_queue,
+            // unused
+            &mut [[false; 9]; 9]
+        );
+
         while let Some(pos_to_check) = check_queue.pop() {
             let cell = &mut board.0[pos_to_check.row as usize][pos_to_check.column as usize];
             let position = cell.position;
@@ -109,7 +105,7 @@ impl CellEliminatedBacktrackingSolver {
                 cell.fixed = true;
                 let new_value = ((!forbidden) >> 1).trailing_zeros() as i8 + 1;
                 cell.value = CellValue::Filled(new_value);
-                // Update forbitten masks with new value
+                // Update forbidden masks with new value
                 row_forbidden[position.row as usize] |= 1u16 << new_value;
                 col_forbidden[position.column as usize] |= 1u16 << new_value;
                 square_forbidden[square_index] |= 1u16 << new_value;
