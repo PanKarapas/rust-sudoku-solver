@@ -3,6 +3,9 @@ name = "rust-sudoku-solver"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+heavy = []
+
 [dependencies]
 
 [dev-dependencies]

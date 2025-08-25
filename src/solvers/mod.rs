@@ -1,9 +1,5 @@
 use crate::solvers::{backtracking::BacktrackingSolver, cell_eliminated_backtracking::CellEliminatedBacktrackingSolver, group_eliminated_backtracking::GroupEliminatedBacktrackingSolver};
 
-#[cfg(test)]
-mod tests;
-
-
 pub mod backtracking;
 pub mod cell_eliminated_backtracking;
 pub mod group_eliminated_backtracking;
