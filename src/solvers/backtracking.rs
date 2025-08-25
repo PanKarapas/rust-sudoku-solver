@@ -1,7 +1,7 @@
 use crate::{board::{cell::{simple_cell::SimpleCell, CellPosition}, Board}, solvers::Solver};
 
-pub struct BackTrackingSolver;
-impl Solver for BackTrackingSolver {
+pub struct BacktrackingSolver;
+impl Solver for BacktrackingSolver {
     fn solve(&self, puzzle: &'static str) -> Result<(bool, String), &'static str> {
         let mut board = match Board::<SimpleCell>::parse_puzzle_string(puzzle) {
             Err(error) => return Err(error),

@@ -16,7 +16,7 @@ impl IsCell for SimpleCell {
         self.fixed
     }
 
-    fn init(value: CellValue, fixed: bool, position: CellPosition) -> Self {
+    fn new(value: CellValue, fixed: bool, position: CellPosition) -> Self {
         SimpleCell {
             value,
             fixed,
