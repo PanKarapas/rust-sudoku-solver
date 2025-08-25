@@ -41,7 +41,14 @@ A full historical list of bench mark results can be found at [bench_results.md](
 
 The name comes from the fact that for each cell we eliminate all the values it can't be, and that allows us to infer which values it can take.
 
+### Heavy
+
+There is also a collection of 1000 puzzles that we can bench against. These vary in difficulty and should provide a good average for each solver accross various types of puzzles.
+
+Because of how long this can take to run, it is not run often.
+
 ### Latest
+#### Normal
 Name | [fastest, median, slowest]
 --- | --- 
 Backtracking_simple | [0.66815 ms 0.68755 ms 0.70721 ms]
@@ -51,7 +58,20 @@ CellEliminatedBacktrackingSolver_hard | [1116.2 ms 1120.3 ms 1125.0 ms]
 GroupEliminatedBacktrackingSolver_simple | [0.43074 ms 0.43724 ms 0.44520 ms]
 GroupEliminatedBacktrackingSolver_hard | [659.86 ms 672.97 ms 688.00 ms]
 
+#### Heavy
+Name | [fastest, median, slowest]
+--- | --- 
+Backtracking_heavy | [5316.0 ms 5365.5 ms 5420.3 ms]
+CellEliminatedBacktrackingSolver_heavy | [1633.9 ms 1672.6 ms 1714.2 ms]
+GroupEliminatedBacktrackingSolver_heavy | [2057.5 ms 2090.8 ms 2128.6 ms]
+
 ### Usage
 ```bash
 cargo bench
+```
+
+Or including the heavy benchmark:
+
+```bash
+cargo bench --feature heavy
 ```

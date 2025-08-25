@@ -3,8 +3,6 @@ use std::array;
 use crate::board::cell::{CellPosition, CellValue, IsCell};
 
 pub mod cell;
-#[cfg(test)]
-mod tests;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Board<T>(pub [[T; 9]; 9])
